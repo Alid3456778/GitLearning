@@ -2,8 +2,13 @@
 // const { app } = require("../server"); // uses your exported app
 
 
+// const request = require("supertest");
+// const { app } = require("../server");
+
 const request = require("supertest");
-const { app } = require("../server");
+const { app, server } = require("../server");
+const mongoose = require("mongoose");
+
 
 let userToken = "";
 let createdProductId = "";
@@ -200,3 +205,9 @@ describe("Admin Delete Product", () => {
     expect(res.statusCode).toBe(200);
   });
 });
+
+afterAll(async () => {
+  await mongoose.connection.close(); // closes database
+  server.close();                    // closes express server
+});
+
