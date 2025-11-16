@@ -1,4 +1,4 @@
-name: Node.js CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -7,24 +7,45 @@ on:
     branches: ["main"]
 
 jobs:
-  build_and_test:
+  test:
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      MONGODB_URI: "mongodb://localhost:27017/testdb"
+      ADMIN_PASSWORD: "admin123"
+      JWT_SECRET: "testsecret"
+
     steps:
-      # 1. Checkout Code
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Setup Node Version
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: 18
 
-      # 3. Install Dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4. Run Tests
+      - name: Wait for MongoDB
+        run: |
+          for i in {1..15}; do
+            nc -z localhost 27017 && echo "MongoDB is ready!" && exit 0
+            echo "Waiting for MongoDB..."
+            sleep 2
+          done
+          echo "MongoDB did not start in time" && exit 1
+
       - name: Run tests
         run: npm test
