@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - E-Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* Header/Navbar */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+
+        .btn-secondary:hover {
+            background: #ecf0f1;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            background: white;
+            padding: 15px 40px;
+            margin-bottom: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 8px;
+        }
+
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        /* Cart Section */
+        .cart-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+        }
+
+        /* Cart Items */
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 1fr 150px 80px;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ecf0f1;
+        }
+
+        .item-image {
+            width: 100px;
+            height: 100px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .item-category {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+
+        .item-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .item-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0 5px;
+        }
+
+        .quantity-control button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+            transition: 0.3s;
+        }
+
+        .quantity-control button:hover {
+            color: #3498db;
+        }
+
+        .quantity-control input {
+            width: 40px;
+            text-align: center;
+            border: none;
+            background: none;
+            font-size: 14px;
+        }
+
+        .item-total {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Empty Cart */
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-cart-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .empty-cart p {
+            margin-bottom: 20px;
+        }
+
+        .empty-cart a {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .empty-cart a:hover {
+            background: #2980b9;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-section h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #ecf0f1;
+            border-bottom: 2px solid #ecf0f1;
+            padding: 12px 0;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .summary-row.total span:last-child {
+            font-size: 22px;
+        }
+
+        .summary-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .summary-actions button {
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .checkout-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .checkout-btn:hover {
+            background: #229954;
+        }
+
+        .checkout-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .continue-shopping {
+            background: white;
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+
+        .continue-shopping:hover {
+            background: #ecf0f1;
+        }
+
+        .clear-cart-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .clear-cart-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Promo Code */
+        .promo-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .promo-section label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .promo-input-group {
+            display: flex;
+            gap: 5px;
+        }
+
+        .promo-input-group input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .promo-input-group button {
+            padding: 8px 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+
+        .promo-input-group button:hover {
+            background: #2980b9;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #0c5460;
+        }
+
+        /* Message */
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+        }
+
+        .close-modal {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .close-modal:hover {
+            color: #e74c3c;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-section {
+                position: static;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr 80px;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+                gap: 15px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .cart-section {
+                padding: 15px;
+            }
+
+            .summary-section {
+                padding: 15px;
+            }
+
+            .cart-item {
+                grid-template-columns: 70px 1fr;
+                gap: 10px;
+            }
+
+            .item-actions {
+                grid-column: 1 / -1;
+                display: flex;
+                gap: 10px;
+                margin-top: 10px;
+            }
+
+            .quantity-control {
+                flex: 1;
+            }
+
+            .remove-btn {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 20px;
+            }
+
+            .cart-item {
+                grid-template-columns: 1fr;
+            }
+
+            .item-image {
+                width: 100%;
+            }
+
+            .cart-item {
+                padding: 10px;
+            }
+
+            .item-details {
+                gap: 5px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header/Navbar -->
+    <header>
+        <div class="navbar">
+            <a href="home.html" class="logo">E-Shop</a>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="products.html">Products</a>
+                <a href="cart.html">Cart</a>
+                <div id="auth-section" class="auth-buttons">
+                    <button class="btn btn-secondary" onclick="openLoginModal()">Login</button>
+                    <button class="btn btn-primary" onclick="openRegisterModal()">Register</button>
+                </div>
+                <div id="user-section" style="display: none; display: flex; gap: 10px; align-items: center;">
+                    <span id="user-name">Welcome</span>
+                    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="home.html">Home</a> / <a href="products.html">Products</a> / Shopping Cart
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Cart Items Section -->
+        <div class="cart-section">
+            <h2>Shopping Cart</h2>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Empty Cart -->
+            <div id="empty-cart" class="empty-cart" style="display: none;">
+                <div class="empty-cart-icon">🛒</div>
+                <h3>Your Cart is Empty</h3>
+                <p>Add some products to get started!</p>
+                <a href="products.html">Continue Shopping</a>
+            </div>
+
+            <!-- Cart Items -->
+            <div id="cart-items" class="cart-items"></div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <h3>Order Summary</h3>
+
+            <div class="promo-section">
+                <label>Promo Code</label>
+                <div class="promo-input-group">
+                    <input type="text" id="promoCode" placeholder="Enter code">
+                    <button onclick="applyPromoCode()">Apply</button>
+                </div>
+                <div id="promo-message" style="margin-top: 8px; font-size: 12px;"></div>
+            </div>
+
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">$0.00</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Shipping:</span>
+                <span id="shipping">$0.00</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Discount:</span>
+                <span id="discount" style="color: #e74c3c;">$0.00</span>
+            </div>
+
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span id="total">$0.00</span>
+            </div>
+
+            <div class="info-box">
+                Free shipping on orders over $50!
+            </div>
+
+            <div class="summary-actions">
+                <button class="checkout-btn" id="checkout-btn" onclick="openCheckoutModal()">Proceed to Checkout</button>
+                <button class="continue-shopping" onclick="window.location.href='products.html'">Continue Shopping</button>
+                <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message -->
+    <div id="message" class="message"></div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login</h2>
+                <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-success">Login</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Register</h2>
+                <span class="close-modal" onclick="closeRegisterModal()">&times;</span>
+            </div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-success">Register</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeRegisterModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Checkout</h2>
+                <span class="close-modal" onclick="closeCheckoutModal()">&times;</span>
+            </div>
+            <form onsubmit="processCheckout(event)">
+                <h3 style="margin-bottom: 15px; font-size: 16px;">Shipping Address</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="checkout-first-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="checkout-last-name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="checkout-email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="checkout-address" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="checkout-city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Postal Code</label>
+                        <input type="text" id="checkout-postal" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Country</label>
+                    <input type="text" id="checkout-country" required>
+                </div>
+
+                <h3 style="margin-bottom: 15px; margin-top: 20px; font-size: 16px;">Payment Method</h3>
+
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="payment-method" value="credit-card" checked> Credit Card
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="payment-method" value="debit-card"> Debit Card
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="payment-method" value="upi"> UPI
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="payment-method" value="paypal"> PayPal
+                    </label>
+                </div>
+
+                <div class="modal-buttons" style="margin-top: 25px;">
+                    <button type="submit" class="btn btn-success">Place Order</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCheckoutModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let userToken = localStorage.getItem('userToken');
+        let userName = localStorage.getItem('userName');
+        let cartData = null;
+        let discount = 0;
+        let promoApplied = false;
+
+        // Initialize
+        window.addEventListener('load', () => {
+            if (!userToken) {
+                window.location.href = 'home.html';
+                return;
+            }
+            updateAuthUI();
+            loadCart();
+        });
+
+        // Load Cart
+        async function loadCart() {
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/cart`, {
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+
+                const data = await response.json();
+                cartData = data;
+
+                if (data.items.length === 0) {
+                    document.getElementById('empty-cart').style.display = 'block';
+                    document.getElementById('checkout-btn').disabled = true;
+                } else {
+                    document.getElementById('empty-cart').style.display = 'none';
+                    document.getElementById('checkout-btn').disabled = false;
+                    displayCartItems(data.items);
+                }
+
+                updateSummary();
+            } catch (err) {
+                showMessage('Error loading cart', 'error');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Display Cart Items
+        function displayCartItems(items) {
+            const cartItemsDiv = document.getElementById('cart-items');
+            cartItemsDiv.innerHTML = '';
+
+            items.forEach(item => {
+                const itemTotal = (item.quantity * item.price).toFixed(2);
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <div class="item-image">
+                        ${item.productDetails?.image ? `<img src="/${item.productDetails.image}" alt="${item.productDetails.name}">` : `📦`}
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">${item.productDetails?.name || 'Product'}</div>
+                        <div class="item-category">${item.productDetails?.category || 'N/A'}</div>
+                        <div class="item-price">$${item.price}</div>
+                    </div>
+                    <div class="item-actions">
+                        <div class="quantity-control">
+                            <button type="button" onclick="updateQuantity('${item.productId}', ${item.quantity - 1})">−</button>
+                            <input type="number" value="${item.quantity}" readonly>
+                            <button type="button" onclick="updateQuantity('${item.productId}', ${item.quantity + 1})">+</button>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart('${item.productId}')">Remove</button>
+                    </div>
+                    <div class="item-total">$${itemTotal}</div>
+                `;
+                cartItemsDiv.appendChild(itemDiv);
+            });
+        }
+
+        // Update Quantity
+        async function updateQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/cart/update/${productId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ quantity: newQuantity })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Cart updated', 'success');
+                    loadCart();
+                } else {
+                    showMessage(data.message || 'Error updating cart', 'error');
+                }
+            } catch (err) {
+                showMessage('Error updating cart', 'error');
+            }
+        }
+
+        // Remove from Cart
+        async function removeFromCart(productId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Item removed from cart', 'success');
+                    loadCart();
+                } else {
+                    showMessage(data.message || 'Error removing item', 'error');
+                }
+            } catch (err) {
+                showMessage('Error removing item', 'error');
+            }
+        }
+
+        // Clear Cart
+        async function clearCart() {
+            if (!confirm('Are you sure you want to clear your cart?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/cart/clear`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${userToken}` }
+                });
+
+                if (response.ok) {
+                    showMessage('Cart cleared', 'success');
+                    loadCart();
+                } else {
+                    showMessage('Error clearing cart', 'error');
+                }
+            } catch (err) {
+                showMessage('Error clearing cart', 'error');
+            }
+        }
+
+        // Update Summary
+        function updateSummary() {
+            const subtotal = parseFloat(cartData.total) || 0;
+            const shipping = subtotal > 50 ? 0 : 10;
+            const total = subtotal + shipping - discount;
+
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('shipping').textContent = `$${shipping.toFixed(2)}`;
+            document.getElementById('discount').textContent = `$${discount.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Apply Promo Code
+        function applyPromoCode() {
+            const promoCode = document.getElementById('promoCode').value.toUpperCase();
+            const promoMessage = document.getElementById('promo-message');
+
+            if (!promoCode) {
+                promoMessage.textContent = '';
+                return;
+            }
+
+            // Sample promo codes
+            const promoCodes = {
+                'SAVE10': 0.10,
+                'SAVE20': 0.20,
+                'WELCOME': 0.15,
+                'FLAT5': 5
+            };
+
+            if (promoCodes[promoCode]) {
+                const subtotal = parseFloat(cartData.total) || 0;
+
+                if (promoCode === 'FLAT5') {
+                    discount = 5;
+                } else {
+                    discount = subtotal * promoCodes[promoCode];
+                }
+
+                promoApplied = true;
+                promoMessage.textContent = `✓ Promo code applied! You saved $${discount.toFixed(2)}`;
+                promoMessage.style.color = '#27ae60';
+                updateSummary();
+                showMessage('Promo code applied successfully!', 'success');
+            } else {
+                promoMessage.textContent = '✗ Invalid promo code';
+                promoMessage.style.color = '#e74c3c';
+                discount = 0;
+                promoApplied = false;
+                updateSummary();
+                showMessage('Invalid promo code', 'error');
+            }
+        }
+
+        // Checkout Modal Functions
+        function openCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('active');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.remove('active');
+        }
+
+        // Process Checkout
+        async function processCheckout(e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('checkout-first-name').value;
+            const lastName = document.getElementById('checkout-last-name').value;
+            const email = document.getElementById('checkout-email').value;
+            const address = document.getElementById('checkout-address').value;
+            const city = document.getElementById('checkout-city').value;
+            const postal = document.getElementById('checkout-postal').value;
+            const country = document.getElementById('checkout-country').value;
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+
+            const shippingAddress = `${firstName} ${lastName}, ${address}, ${city}, ${postal}, ${country}`;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        shippingAddress,
+                        paymentMethod
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage('Order placed successfully!', 'success');
+                    closeCheckoutModal();
+                    setTimeout(() => {
+                        window.location.href = 'order-confirmation.html?orderId=' + data.order._id;
+                    }, 1000);
+                } else {
+                    showMessage(data.message || 'Error placing order', 'error');
+                }
+            } catch (err) {
+                showMessage('Error placing order', 'error');
+            }
+        }
+
+        // Auth Modal Functions
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function openRegisterModal() {
+            document.getElementById('registerModal').classList.add('active');
+        }
+
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.remove('active');
+        }
+
+        // Handle Login
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('userToken', data.token);
+                    localStorage.setItem('userName', data.user.name);
+                    userToken = data.token;
+                    userName = data.user.name;
+
+                    showMessage('Login successful!', 'success');
+                    closeLoginModal();
+                    updateAuthUI();
+                    loadCart();
+                } else {
+                    showMessage(data.message || 'Login failed', 'error');
+                }
+            } catch (err) {
+                showMessage('Error during login', 'error');
+            }
+        }
+
+        // Handle Register
+        async function handleRegister(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('userToken', data.token);
+                    localStorage.setItem('userName', data.user.name);
+                    userToken = data.token;
+                    userName = data.user.name;
+
+                    showMessage('Registration successful!', 'success');
+                    closeRegisterModal();
+                    updateAuthUI();
+                    loadCart();
+                } else {
+                    showMessage(data.message || 'Registration failed', 'error');
+                }
+            } catch (err) {
+                showMessage('Error during registration', 'error');
+            }
+        }
+
+        // Update Auth UI
+        function updateAuthUI() {
+            const authSection = document.getElementById('auth-section');
+            const userSection = document.getElementById('user-section');
+
+            if (userToken) {
+                authSection.style.display = 'none';
+                userSection.style.display = 'flex';
+                document.getElementById('user-name').textContent = `Welcome, ${userName}!`;
+            } else {
+                authSection.style.display = 'flex';
+                userSection.style.display = 'none';
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userName');
+            window.location.href = 'home.html';
+        }
+
+        // Show Message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message active ${type}`;
+
+            setTimeout(() => {
+                messageDiv.classList.remove('active');
+            }, 3000);
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            const loginModal = document.getElementById('loginModal');
+            const registerModal = document.getElementById('registerModal');
+            const checkoutModal = document.getElementById('checkoutModal');
+
+            if (event.target === loginModal) closeLoginModal();
+            if (event.target === registerModal) closeRegisterModal();
+            if (event.target === checkoutModal) closeCheckoutModal();
+        }
+    </script>
+</body>
+</html>
